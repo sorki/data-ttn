@@ -8,7 +8,8 @@ See https://www.thethingsnetwork.org/docs/applications/mqtt/api.html
 Usage
 -----
 
-::
+Use `parse` to decode::
+
   import Data.TTN
   import qualified Data.ByteString.Char8 as B
 
