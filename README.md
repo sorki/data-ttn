@@ -18,5 +18,4 @@ main = do
   case parse j of
     Left err -> putStrLn err
     Right t -> print t
-  import Data.TTN
 ```
