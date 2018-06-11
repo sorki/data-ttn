@@ -1,0 +1,1 @@
+{"payload":"YO0qASYgmwblb5If","message":{"app_id":"basetest","dev_id":"tester","port":0},"gateway_id":"eui-b827ebfffec6e5d0","config":{"modulation":"LORA","data_rate":"SF9BW125","airtime":144384000,"counter":1691,"frequency":869525000,"power":27}}
