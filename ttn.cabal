@@ -1,4 +1,4 @@
-name:                data-ttn
+name:                ttn
 version:             0.1.0.0
 synopsis:            Things Tracker Network JSON Types
 description:         Parse JSONs from TTN MQTT API
@@ -33,7 +33,7 @@ test-suite data-ttn-tests
                        DownlinkSpec
                        SpecHelper
   build-depends:       base >= 4.7 && < 5
-                     , data-ttn
+                     , ttn
                      , aeson
                      , hspec
                      , hspec-expectations

@@ -348,8 +348,22 @@ instance ToJSON Downlink where
     <> "schedule"        .= downlinkSchedule
     )
 
+
+data Error = Error { errorMsg :: Text } deriving (Show)
+
+instance FromJSON Error where
+  parseJSON (Object v) = Error <$> v .: "error"
+  parseJSON _          = mzero
+
+instance ToJSON Error where
+  toJSON (Error {..}) = object [ "error" .= errorMsg ]
+  toEncoding (Error {..}) = pairs ( "error" .= errorMsg )
+
 parse :: B.ByteString -> Either String Uplink
 parse = eitherDecodeStrict
+
+parseError :: B.ByteString -> Either String Error
+parseError = eitherDecodeStrict
 
 parseFile :: FilePath -> IO Uplink
 parseFile filename = do
