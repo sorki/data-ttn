@@ -47,7 +47,7 @@ data Config = Config {
   , configAirtime    :: Maybe Double
   , configPower      :: Maybe Double
   , configModulation :: Maybe Text
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON Config where
   parseJSON (Object v) = Config
@@ -97,7 +97,7 @@ data GatewaysElt = GatewaysElt {
   , gatewaysEltAltitude               :: Maybe Int
   , gatewaysEltAccuracy               :: Maybe Int
   , gatewaysEltSource                 :: Maybe Text
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON GatewaysElt where
   parseJSON (Object v) = GatewaysElt
@@ -168,7 +168,7 @@ data Metadata = Metadata {
   , metadataAirtime    :: Maybe Double
   , metadataCodingRate :: Maybe Text
   , metadataGateways   :: [GatewaysElt]
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON Metadata where
   parseJSON (Object v) = Metadata <$>
@@ -209,7 +209,7 @@ data Message = Message {
     messageDevId :: Text,
     messageAppId :: Text,
     messagePort  :: Double
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON Message where
   parseJSON (Object v) = Message
@@ -246,7 +246,7 @@ data Uplink = Uplink {
   , uplinkConfirmed      :: Maybe Bool
   , uplinkHardwareSerial :: Maybe Text
   , uplinkPort           :: Maybe Double
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON Uplink where
   parseJSON (Object v) = Uplink
@@ -361,6 +361,30 @@ instance FromJSON Error where
 instance ToJSON Error where
   toJSON (Error {..}) = object [ "error" .= errorMsg ]
   toEncoding (Error {..}) = pairs ( "error" .= errorMsg )
+
+-- used by ttn-client
+data EventType =
+    Up
+  | Down
+  | DownAcked
+  | DownSent
+  | DownScheduled
+  | Activation
+  | Create
+  | Update
+  | Delete
+  | Unknown
+  deriving (Eq, Ord, Show, Generic)
+
+data Event =
+    Event EventType Uplink
+  | ClientError String
+  deriving (Eq, Show, Generic)
+
+instance FromJSON EventType where
+instance ToJSON EventType where
+instance FromJSON Event where
+instance ToJSON Event where
 
 parse :: B.ByteString -> Either String Uplink
 parse = eitherDecodeStrict
