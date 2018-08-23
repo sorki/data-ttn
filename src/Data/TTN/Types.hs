@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE DeriveGeneric       #-}
+{-# LANGUAGE FlexibleInstances   #-}
 
 module Data.TTN.Types where
 
@@ -23,7 +24,7 @@ import Data.Time.LocalTime
 -- | Workaround for https://github.com/bos/aeson/issues/287.
 o .:?? val = fmap join (o .:? val)
 
-data TTNZonedTime = TTNZonedTime { unwrap :: ZonedTime } deriving (Show, Generic)
+data TTNZonedTime = TTNZonedTime { unwrap :: ZonedTime } deriving (Eq, Show, Generic)
 
 instance ToJSON TTNZonedTime where
   toJSON     = toJSON . (formatTimeRFC3339 :: ZonedTime -> Text) . unwrap
@@ -35,6 +36,8 @@ instance FromJSON TTNZonedTime where
       Nothing -> fail $ "Parsing RFC3339 value failed, got:" ++ show x
       Just t -> return $ TTNZonedTime t
 
+instance Eq ZonedTime where
+  ZonedTime t1 tz1 == ZonedTime t2 tz2 = t1 == t2 && tz1 == tz2
 
 -- https://github.com/TheThingsNetwork/ttn/blob/develop/core/types/event.go#L65
 data Config = Config {
