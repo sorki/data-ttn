@@ -83,7 +83,7 @@ instance ToJSON Config where
 data GatewaysElt = GatewaysElt {
     gatewaysEltGtwId                  :: Maybe Text
   , gatewaysEltGtwTrusted             :: Maybe Bool
-  , gatewaysEltTimestamp              :: Maybe Int
+  , gatewaysEltTimestamp              :: Maybe Integer
   , gatewaysEltFineTimestamp          :: Maybe Int
   , gatewaysEltFineTimestampEncrypted :: Maybe Text
   , gatewaysEltTime                   :: Maybe TTNZonedTime
