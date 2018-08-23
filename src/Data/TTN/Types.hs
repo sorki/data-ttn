@@ -43,7 +43,7 @@ instance Eq ZonedTime where
 data Config = Config {
     configFrequency  :: Maybe Double
   , configDataRate   :: Maybe Text
-  , configCounter    :: Maybe Double
+  , configCounter    :: Maybe Integer
   , configAirtime    :: Maybe Double
   , configPower      :: Maybe Double
   , configModulation :: Maybe Text
@@ -237,7 +237,7 @@ data Uplink = Uplink {
   , uplinkGatewayId      :: Maybe Text
   , uplinkDevId          :: Maybe Text
   , uplinkPayload        :: Maybe Text
-  , uplinkCounter        :: Maybe Double
+  , uplinkCounter        :: Maybe Integer
   , uplinkIsRetry        :: Maybe Bool
   , uplinkMetadata       :: Maybe Metadata
   , uplinkPayloadRaw     :: Maybe Text
