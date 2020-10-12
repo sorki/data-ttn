@@ -9,7 +9,7 @@ import System.Exit (exitFailure, exitSuccess)
 import System.IO (stderr, hPutStrLn)
 import qualified Data.ByteString.Char8 as B
 import System.Environment (getArgs)
-import Control.Monad (forM_, mzero, join)
+import Control.Monad (forM_, mzero)
 import Control.Applicative
 import Data.Aeson(decodeStrict, eitherDecodeStrict,
                   Value(..), FromJSON(..), ToJSON(..),
@@ -21,8 +21,6 @@ import GHC.Generics
 import Data.Time.RFC3339
 import Data.Time.LocalTime
 
--- | Workaround for https://github.com/bos/aeson/issues/287.
-o .:?? val = fmap join (o .:? val)
 
 data TTNZonedTime = TTNZonedTime { unwrap :: ZonedTime } deriving (Eq, Show, Generic)
 
@@ -51,12 +49,12 @@ data Config = Config {
 
 instance FromJSON Config where
   parseJSON (Object v) = Config
-    <$> v .:?? "frequency"
-    <*> v .:?? "data_rate"
-    <*> v .:?? "counter"
-    <*> v .:?? "airtime"
-    <*> v .:?? "power"
-    <*> v .:?? "modulation"
+    <$> v .:? "frequency"
+    <*> v .:? "data_rate"
+    <*> v .:? "counter"
+    <*> v .:? "airtime"
+    <*> v .:? "power"
+    <*> v .:? "modulation"
   parseJSON _          = mzero
 
 instance ToJSON Config where
@@ -101,22 +99,22 @@ data GatewaysElt = GatewaysElt {
 
 instance FromJSON GatewaysElt where
   parseJSON (Object v) = GatewaysElt
-    <$> v .:?? "gtw_id"
-    <*> v .:?? "gtw_trusted"
-    <*> v .:?? "timestamp"
-    <*> v .:?? "fine_timestamp"
-    <*> v .:?? "fine_timestamp_encrypted"
-    <*> v .:?? "time"
-    <*> v .:?? "antenna"
+    <$> v .:? "gtw_id"
+    <*> v .:? "gtw_trusted"
+    <*> v .:? "timestamp"
+    <*> v .:? "fine_timestamp"
+    <*> v .:? "fine_timestamp_encrypted"
+    <*> v .:? "time"
+    <*> v .:? "antenna"
     <*> v .:   "channel"
     <*> v .:   "rssi"
     <*> v .:   "snr"
     <*> v .:   "rf_chain"
-    <*> v .:?? "latitude"
-    <*> v .:?? "longitude"
-    <*> v .:?? "altitude"
-    <*> v .:?? "accuracy"
-    <*> v .:?? "source"
+    <*> v .:? "latitude"
+    <*> v .:? "longitude"
+    <*> v .:? "altitude"
+    <*> v .:? "accuracy"
+    <*> v .:? "source"
   parseJSON _          = mzero
 
 instance ToJSON GatewaysElt where
@@ -172,13 +170,13 @@ data Metadata = Metadata {
 
 instance FromJSON Metadata where
   parseJSON (Object v) = Metadata <$>
-        v .:?? "time"
-    <*> v .:?? "frequency"
-    <*> v .:?? "modulation"
-    <*> v .:?? "data_rate"
-    <*> v .:?? "bit_rate"
-    <*> v .:?? "airtime"
-    <*> v .:?? "coding_rate"
+        v .:? "time"
+    <*> v .:? "frequency"
+    <*> v .:? "modulation"
+    <*> v .:? "data_rate"
+    <*> v .:? "bit_rate"
+    <*> v .:? "airtime"
+    <*> v .:? "coding_rate"
     <*> v .:   "gateways"
   parseJSON _          = mzero
 
@@ -250,19 +248,19 @@ data Uplink = Uplink {
 
 instance FromJSON Uplink where
   parseJSON (Object v) = Uplink
-    <$> v .:?? "config"
-    <*> v .:?? "gateway_id"
-    <*> v .:?? "dev_id"
-    <*> v .:?? "payload"
-    <*> v .:?? "counter"
-    <*> v .:?? "is_retry"
-    <*> v .:?? "metadata"
-    <*> v .:?? "payload_raw"
-    <*> v .:?? "message"
-    <*> v .:?? "app_id"
-    <*> v .:?? "confirmed"
-    <*> v .:?? "hardware_serial"
-    <*> v .:?? "port"
+    <$> v .:? "config"
+    <*> v .:? "gateway_id"
+    <*> v .:? "dev_id"
+    <*> v .:? "payload"
+    <*> v .:? "counter"
+    <*> v .:? "is_retry"
+    <*> v .:? "metadata"
+    <*> v .:? "payload_raw"
+    <*> v .:? "message"
+    <*> v .:? "app_id"
+    <*> v .:? "confirmed"
+    <*> v .:? "hardware_serial"
+    <*> v .:? "port"
   parseJSON _          = mzero
 
 instance ToJSON Uplink where
@@ -330,7 +328,7 @@ instance FromJSON Downlink where
     <*> v .:   "port"
     <*> v .:   "payload_raw"
     <*> v .:   "confirmed"
-    <*> v .:?? "schedule"
+    <*> v .:? "schedule"
   parseJSON _          = mzero
 
 instance ToJSON Downlink where
