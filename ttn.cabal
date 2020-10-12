@@ -1,5 +1,5 @@
 name:                ttn
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Things Tracker Network JSON Types
 description:         Parse JSONs from TTN MQTT API
 homepage:            https://github.com/sorki/data-ttn
