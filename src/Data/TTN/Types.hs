@@ -2,27 +2,39 @@
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE DeriveGeneric       #-}
 {-# LANGUAGE FlexibleInstances   #-}
+{-# OPTIONS_GHC -Wno-orphans     #-}
 
 module Data.TTN.Types where
 
-import System.Exit (exitFailure, exitSuccess)
-import System.IO (stderr, hPutStrLn)
-import qualified Data.ByteString.Char8 as B
-import System.Environment (getArgs)
 import Control.Monad (forM_, mzero)
-import Control.Applicative
-import Data.Aeson(decodeStrict, eitherDecodeStrict,
-                  Value(..), FromJSON(..), ToJSON(..),
-                  pairs, withText, (.:), (.:?), (.=), object)
-import Data.Monoid
-import Data.Text (Text, unpack)
+
+import Data.Aeson ( decodeStrict
+                  , eitherDecodeStrict
+                  , Value(..)
+                  , FromJSON(..)
+                  , ToJSON(..)
+                  , pairs
+                  , withText
+                  , (.:)
+                  , (.:?)
+                  , (.=)
+                  , object)
+
+import Data.ByteString.Char8 (ByteString)
+import Data.Text (Text)
+
 import GHC.Generics
 
 import Data.Time.RFC3339
 import Data.Time.LocalTime
 
+import qualified Data.ByteString.Char8
+import qualified Data.Text
+import qualified System.Exit
+import qualified System.IO
 
-data TTNZonedTime = TTNZonedTime { unwrap :: ZonedTime } deriving (Eq, Show, Generic)
+data TTNZonedTime = TTNZonedTime { unwrap :: ZonedTime }
+  deriving (Eq, Show, Generic)
 
 instance ToJSON TTNZonedTime where
   toJSON     = toJSON . (formatTimeRFC3339 :: ZonedTime -> Text) . unwrap
@@ -304,7 +316,7 @@ instance FromJSON Schedule where
       "replace" -> return ScheduleReplace
       "first"   -> return ScheduleFirst
       "last"    -> return ScheduleLast
-      w         -> fail $ "Unknown schedule" ++ (unpack w)
+      w         -> fail $ "Unknown schedule" ++ (Data.Text.unpack w)
 
 instance ToJSON Schedule where
   toJSON ScheduleReplace = "replace"
@@ -384,26 +396,25 @@ instance ToJSON EventType where
 instance FromJSON Event where
 instance ToJSON Event where
 
-parse :: B.ByteString -> Either String Uplink
+parse :: ByteString -> Either String Uplink
 parse = eitherDecodeStrict
 
-parseError :: B.ByteString -> Either String Error
+parseError :: ByteString -> Either String Error
 parseError = eitherDecodeStrict
 
 parseFile :: FilePath -> IO Uplink
 parseFile filename = do
-  input <- B.readFile filename
+  input <- Data.ByteString.Char8.readFile filename
   case decodeStrict input of
     Nothing -> fatal $ case (decodeStrict input :: Maybe Value) of
                          Nothing -> "Invalid JSON file: "     ++ filename
-                         Just v  -> "Mismatched JSON value from file: " ++ filename
+                         Just _v -> "Mismatched JSON value from file: " ++ filename
     Just r  -> return (r :: Uplink)
   where
     fatal :: String -> IO a
-    fatal msg = do hPutStrLn stderr msg
-                   exitFailure
+    fatal msg = do System.IO.hPutStrLn System.IO.stderr msg
+                   System.Exit.exitFailure
 
 parseMany :: [String] -> IO ()
 parseMany filenames = do
   forM_ filenames (\f -> parseFile f >>= (\p -> p `seq` putStrLn $ "Successfully parsed " ++ f))
-  exitSuccess
